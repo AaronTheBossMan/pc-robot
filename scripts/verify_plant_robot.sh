@@ -578,11 +578,49 @@ else
     fail "ROS 2 is configured in .bashrc"
 fi
 
+if grep -q "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash" "$HOME/.bashrc"; then
+    pass "colcon bash completion is configured in .bashrc"
+else
+    fail "colcon bash completion is configured in .bashrc"
+fi
+
+if grep -q "source /usr/share/colcon_cd/function/colcon_cd.sh" "$HOME/.bashrc"; then
+    pass "colcon_cd is configured in .bashrc"
+else
+    fail "colcon_cd is configured in .bashrc"
+fi
+
+if grep -Eq 'export _colcon_cd_root=.*plant_robot_ws' "$HOME/.bashrc"; then
+    pass "colcon_cd workspace root is configured in .bashrc"
+else
+    fail "colcon_cd workspace root is configured in .bashrc"
+fi
+
+
 ################################################################################
-# 19. ROS Package Discovery
+# 19. colcon shell functionality
 ################################################################################
 
-section "19. ROS Package Discovery"
+section "19. colcon shell functionality"
+
+if [ -f "/usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash" ] \
+    && [ -f "/usr/share/colcon_cd/function/colcon_cd.sh" ]; then
+
+    if bash -lc 'source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash >/dev/null 2>&1; source /usr/share/colcon_cd/function/colcon_cd.sh >/dev/null 2>&1; complete -p colcon >/dev/null 2>&1 && command -v colcon_cd >/dev/null 2>&1'; then
+        pass "colcon completion and colcon_cd are active in bash"
+    else
+        fail "colcon completion and colcon_cd are active in bash"
+    fi
+
+else
+    fail "colcon completion and colcon_cd are active in bash"
+fi
+
+################################################################################
+# 20. ROS Package Discovery
+################################################################################
+
+section "20. ROS Package Discovery"
 
 
 if command_exists ros2; then

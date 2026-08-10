@@ -544,6 +544,18 @@ append_if_missing \
     "source /opt/ros/$ROS_DISTRO/setup.bash" \
     "$HOME/.bashrc"
 
+append_if_missing \
+    "source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash" \
+    "$HOME/.bashrc"
+
+append_if_missing \
+    "source /usr/share/colcon_cd/function/colcon_cd.sh" \
+    "$HOME/.bashrc"
+
+append_if_missing \
+    "export _colcon_cd_root=\"$WORKSPACE\"" \
+    "$HOME/.bashrc"
+
 
 ################################################################################
 # ROS Workspace
@@ -904,6 +916,22 @@ echo ""
 #
 #   plant_robot_ws
 #   └── src
+#
+# ------------------------------------------------------------------------------
+# 21. VERIFY COLCON TAB COMPLETION AND COLCON_CD
+# ------------------------------------------------------------------------------
+#
+# bash -lc 'source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash; \
+#           source /usr/share/colcon_cd/function/colcon_cd.sh; \
+#           complete -p colcon; \
+#           command -v colcon_cd; \
+#           cd ~/plant_robot_ws; \
+#           colcon_cd ..'
+#
+# Expected:
+#   - `colcon` has tab completion enabled
+#   - `colcon_cd` is available in the shell
+#   - `colcon_cd` resolves to the workspace root
 #
 #
 ################################################################################
