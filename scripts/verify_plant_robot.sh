@@ -57,7 +57,6 @@ else
     RESET=''
 fi
 
-
 ################################################################################
 # Helper Functions
 ################################################################################
@@ -138,6 +137,20 @@ check_package()
 
 
 ################################################################################
+# Run minimal verification (shared) if available
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -x "$SCRIPT_DIR/verify_minimal_setup.sh" ]; then
+    echo ""
+    echo "================================================================"
+    echo "Running minimal verification (shared)"
+    echo "================================================================"
+    if bash "$SCRIPT_DIR/verify_minimal_setup.sh"; then
+        pass "Minimal verification passed"
+    else
+        fail "Minimal verification failed"
+    fi
+fi
+
 # Header
 ################################################################################
 

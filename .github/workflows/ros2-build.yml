@@ -1,0 +1,40 @@
+name: ROS 2 Build (jazzy)
+
+on:
+  # Run on any push to any branch
+  push: {}
+  # Run on any pull request event
+  pull_request: {}
+  # Allow manual runs from the Actions UI
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      LANG: en_US.UTF-8
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run minimal repository/setup script
+        run: |
+          bash scripts/minimal_setup.sh
+
+      - name: Install ROS package dependencies with rosdep
+        working-directory: ros2_ws
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          rosdep install --from-paths src --ignore-src -r -y
+
+      - name: Build workspace with colcon
+        working-directory: ros2_ws
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          python3 -m pip install -U colcon-common-extensions || true
+          colcon build --event-handlers console_direct+
+
+      - name: Source workspace and run minimal verification
+        working-directory: ros2_ws
+        run: |
+          bash ../scripts/verify_minimal_setup.sh

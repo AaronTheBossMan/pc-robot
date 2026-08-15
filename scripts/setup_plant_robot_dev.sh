@@ -194,6 +194,13 @@ echo "=============================================="
 install_packages \
     git-lfs
 
+# Reuse minimal setup for core ROS apt/config and base packages to avoid duplication
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -x "$SCRIPT_DIR/minimal_setup.sh" ]; then
+    echo "Running minimal setup (shared)..."
+    bash "$SCRIPT_DIR/minimal_setup.sh"
+fi
+
 
 ################################################################################
 # ROS 2 Repository
