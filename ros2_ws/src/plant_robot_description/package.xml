@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>plant_robot_description</name>
+  <version>0.0.0</version>
+  <description>Robot description package for the PC Robot project.</description>
+  <maintainer email="235968424+AaronTheBossMan@users.noreply.github.com">Aaron</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
