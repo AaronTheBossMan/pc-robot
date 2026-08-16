@@ -199,3 +199,64 @@ The following functionality does not exist yet and is intentionally outside the 
 - no application behavior in the bringup package
 
 These will be added in future Jira stories as the architecture evolves.
+
+## Continuous Integration
+
+**What the CI pipeline does:**
+- Builds the `ros2_ws` workspace on GitHub Actions using Ubuntu 24.04 and ROS 2 Jazzy.
+- Installs only the ROS packages and system tools required to build the workspace using `rosdep`.
+- Runs `colcon build` and fails the job on build errors.
+- After a successful build, sources the workspace and verifies that the project packages and the C++ executable are discoverable, and runs the minimal C++ node to ensure it executes successfully.
+
+**When it runs:**
+- On `push` to `main` and on `pull_request` events targeting `main`.
+
+**CI environment:**
+- GitHub-hosted `ubuntu-24.04` runner.
+- ROS 2 Jazzy installed via `ros-tooling/setup-ros` and `apt` (`ros-jazzy-ros-base`).
+
+**How dependencies are installed:**
+- The workflow initializes `rosdep`, runs `rosdep update`, then runs:
+
+```bash
+rosdep install --from-paths src --ignore-src -r -y
+```
+
+This ensures only dependencies referenced by the workspace `package.xml` files are installed.
+
+**How the workspace is built:**
+
+```bash
+source /opt/ros/jazzy/setup.bash
+colcon build --event-handlers console_direct+
+```
+
+The `console_direct+` event handler is used so CI logs include per-package output useful for diagnosing build failures.
+
+**Validation performed by CI:**
+- `ros2 pkg list | grep plant_robot` — verifies the three project packages are discoverable:
+   - `plant_robot_description`
+   - `plant_robot_bringup`
+   - `plant_robot_core`
+- `ros2 pkg executables plant_robot_core` — verifies the C++ executable is installed
+- `ros2 run plant_robot_core plant_robot_node` — runs the minimal node; CI fails if it exits non-zero
+
+**Reproducing the CI build locally:**
+
+On an Ubuntu 24.04 machine with ROS 2 Jazzy installed, run the following from the workspace root:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+cd ~/pc-robot/ros2_ws
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y
+colcon build --event-handlers console_direct+
+source install/setup.bash
+ros2 pkg list | grep plant_robot
+ros2 pkg executables plant_robot_core
+ros2 run plant_robot_core plant_robot_node
+```
+
+**Notes and future work:**
+- This CI focuses strictly on building and basic runtime discovery. Automated tests (e.g., `colcon test`) will be added in a future Jira story.
+- If `rosdep` cannot resolve a dependency, the workflow will report the missing key — address by adding a mapping or installing the required system package on the CI image.
