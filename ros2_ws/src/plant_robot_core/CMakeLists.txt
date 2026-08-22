@@ -8,6 +8,10 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+endif()
+
 add_executable(plant_robot_node src/plant_robot_node.cpp)
 ament_target_dependencies(plant_robot_node rclcpp)
 
@@ -26,3 +30,10 @@ install(DIRECTORY include/
 )
 
 ament_package()
+
+if(BUILD_TESTING)
+  ament_add_gtest(test_plant_robot_core test/test_plant_robot_core.cpp)
+  if(TARGET test_plant_robot_core)
+    ament_target_dependencies(test_plant_robot_core rclcpp)
+  endif()
+endif()

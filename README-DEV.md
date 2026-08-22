@@ -139,9 +139,55 @@ ros2 pkg prefix plant_robot_description
 
 ## Testing
 
-At this stage, the project has no substantive application tests. The current verification method is building the workspace and running the package-level checks listed in this guide.
+This workspace now contains an automated testing infrastructure with three layers:
 
-Testing infrastructure for robot behavior, simulation, and integration will be established in future Jira stories.
+- **C++ Unit Tests**: Located in `plant_robot_core/test/`. These use GoogleTest integrated via `ament_cmake_gtest` and validate existing C++ code (for example, node construction/initialization).
+- **Python Tests**: Located in a dedicated package `plant_robot_integration_tests/` and implemented with `pytest` and `ament_cmake_pytest` as appropriate.
+- **ROS Integration Tests**: Also in `plant_robot_integration_tests/`, using `launch_testing` and `launch_testing_ros` to exercise ROS interfaces in a headless CI-friendly way.
+
+Test execution (full workspace):
+
+```bash
+source /opt/ros/jazzy/setup.bash
+cd ~/pc-robot/ros2_ws
+colcon build --event-handlers console_direct+
+source install/setup.bash
+colcon test --event-handlers console_direct+
+colcon test-result --verbose
+```
+
+Run tests for a single package:
+
+```bash
+colcon test --packages-select plant_robot_core
+colcon test-result --verbose --packages-select plant_robot_core
+```
+
+Integration tests run headless and do not require GUI or hardware. They currently perform lightweight checks such as launching the existing `plant_robot_node` and asserting it starts and exits cleanly. No fake production functionality was added to support these tests.
+
+CI integration
+
+The GitHub Actions workflow `.github/workflows/ros2-build.yml` now runs `colcon test` and `colcon test-result --verbose` after the workspace is built. The CI job fails if the build or any test fails.
+
+Adding tests
+
+Future tests should follow this organization:
+
+```
+plant_robot_core/
+└── test/
+   └── test_plant_robot_core.cpp  # GoogleTest
+
+plant_robot_integration_tests/
+└── test/
+   ├── test_integration.py        # pytest + launch_testing
+```
+
+Notes
+
+- Tests should be deterministic, small, and independent of hardware or GUI.
+- Use ROS package dependencies (`package.xml`) so `rosdep install` in CI will install required test dependencies.
+- The test infrastructure will expand as meaningful application logic is introduced; avoid adding production code solely to satisfy tests.
 
 ## Development Workflow
 
