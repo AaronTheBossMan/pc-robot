@@ -38,3 +38,12 @@ jobs:
         working-directory: ros2_ws
         run: |
           bash ../scripts/verify_minimal_setup.sh
+
+      - name: Run tests with colcon
+        working-directory: ros2_ws
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          source install/setup.bash
+          python3 -m pip install -U colcon-common-extensions || true
+          colcon test --event-handlers console_direct+
+          colcon test-result --verbose

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>plant_robot_integration_tests</name>
+  <version>0.0.0</version>
+  <description>Integration and Python tests for the PC Robot project.</description>
+  <maintainer email="235968424+AaronTheBossMan@users.noreply.github.com">Aaron</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>ament_cmake_pytest</build_depend>
+  <build_depend>launch</build_depend>
+  <build_depend>launch_ros</build_depend>
+  <build_depend>launch_testing</build_depend>
+  <build_depend>launch_testing_ros</build_depend>
+
+  <exec_depend>pytest</exec_depend>
+  <exec_depend>plant_robot_core</exec_depend>
+
+  <test_depend>ament_cmake_pytest</test_depend>
+  <test_depend>launch_testing</test_depend>
+  <test_depend>launch_testing_ros</test_depend>
+  <test_depend>pytest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
